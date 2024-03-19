@@ -1,0 +1,130 @@
+C251 COMPILER V5.60.0,  Bluetooth                                                          04/03/24  11:37:30  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE Bluetooth
+OBJECT MODULE PLACED IN .\Objects\Bluetooth.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE HARDWARE\src\Bluetooth.c XSMALL BROWSE INCDIR(.\HARDWARE\inc) DEBUG PR
+                    -INT(.\Listings\Bluetooth.lst) TABS(2) OBJECT(.\Objects\Bluetooth.obj) 
+
+stmt  level    source
+
+    1          #include "Bluetooth.h"
+    2          #include "motor.h"
+    3          #include "LED.h"
+    4          #include "beep.h"
+    5          
+    6          uint8 Car_State_number = 0; //小车状态值 ,蓝牙发送数据获取
+    7          
+    8          //========================================================================
+    9          // 函数: void Calculation_Data(void)
+   10          // 描述: 根据状态数值去进行PWM调节
+   11          // 参数:
+   12          // 返回: Count_State_number  1  前进
+   13          // 返回: Count_State_number  2  后退
+   14          // 返回: Count_State_number  3  左转
+   15          // 返回: Count_State_number  4  右转
+   16          // 返回: Count_State_number  5  停止
+   17          // 版本: VER1.0
+   18          // 日期: 2022-9-24
+   19          // 备注:
+   20          //========================================================================
+   21          void Adjust_Pwm_data(void)
+   22          {
+   23   1        switch(Car_State_number)
+   24   1          {
+   25   2          case 1:
+   26   2            Car_Forword(PWM_Count);
+   27   2            break;
+   28   2          case 2:
+   29   2            Car_Back(PWM_Count);
+   30   2            break;
+   31   2          case 3:
+   32   2            Car_Turn_Left(PWM_Count);
+   33   2            break;
+   34   2          case 4:
+   35   2            Car_Turn_Right(PWM_Count);
+   36   2            break;
+   37   2          case 5:
+   38   2            Car_Stop();
+   39   2            break;
+   40   2      
+   41   2          // 2024/01/15 添加，此处方向为小车移动方向，非转弯方向
+   42   2          // Count_State_number  7  左后
+   43   2          // Count_State_number  8  右后
+   44   2          case 7:
+   45   2            Car_Back_Left(PWM_Count);
+   46   2            break;
+   47   2          case 8:
+   48   2            Car_Back_Right(PWM_Count);
+   49   2            break;
+   50   2      
+   51   2          // 2024/01/17 添加按键控制 纯左掉头/右掉头
+   52   2          // Count_State_number 9   纯左掉头
+   53   2          // Count_State_number 10  纯右掉头
+   54   2          case 9:
+   55   2            Car_Pure_Left(PWM_Count);
+   56   2            break;
+   57   2          case 10:
+   58   2            Car_Pure_Right(PWM_Count);
+C251 COMPILER V5.60.0,  Bluetooth                                                          04/03/24  11:37:30  PAGE 2   
+
+   59   2            break;
+   60   2      
+   61   2          default :
+   62   2            Car_Stop();
+   63   2            break;
+   64   2          }
+   65   1      }
+   66          
+   67          
+   68          
+   69          
+   70          
+   71          
+   72          
+   73          
+   74          
+   75          
+   76          
+   77          
+   78          
+   79          
+   80          
+   81          
+   82          
+   83          
+   84          
+   85          
+   86          
+   87          
+   88          
+   89          
+   90          
+   91          
+   92          
+   93          
+   94          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       109     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         1     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         5     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

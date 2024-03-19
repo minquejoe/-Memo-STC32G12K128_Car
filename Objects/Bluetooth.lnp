@@ -1,0 +1,14 @@
+".\Objects\main.obj",
+".\Objects\delay.obj",
+".\Objects\motor.obj",
+".\Objects\timer.obj",
+".\Objects\uart1.obj",
+".\Objects\uart2.obj",
+".\Objects\Bluetooth.obj",
+".\Objects\beep.obj",
+".\Objects\sr04.obj",
+".\Objects\LED.obj" 
+TO ".\Objects\Bluetooth" 
+PRINT(".\Listings\Bluetooth.map") CASE 
+CLASSES (EDATA (0x0-0xFFF), 
+HDATA (0x0-0xFFF)) 

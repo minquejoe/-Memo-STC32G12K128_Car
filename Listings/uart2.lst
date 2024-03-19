@@ -1,0 +1,179 @@
+C251 COMPILER V5.60.0,  uart2                                                              04/03/24  11:37:30  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE uart2
+OBJECT MODULE PLACED IN .\Objects\uart2.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE HARDWARE\src\uart2.c XSMALL BROWSE INCDIR(.\HARDWARE\inc) DEBUG PRINT(
+                    -.\Listings\uart2.lst) TABS(2) OBJECT(.\Objects\uart2.obj) 
+
+stmt  level    source
+
+    1          #include "uart2.h"
+    2          #include "timer.h"
+    3          #include "uart1.h"
+    4          #include "delay.h"
+    5          #include "Bluetooth.h"
+    6          
+    7          void update_car(unsigned char temp);
+    8          void delay_with_BLE(unsigned char time);
+    9          
+   10          volatile uint8 Flg=FALSE;
+   11          uint8 uart2temp=0;
+   12          unsigned char i;
+   13          
+   14          /***************************************************************************
+   15           * 描  述 : 串口2初始化函数
+   16           * 入  参 : 无
+   17           * 返回值 : 无
+   18          备注：波特率9600bps   晶振24MHz
+   19           **************************************************************************/
+   20          void Uart2_Init(void)
+   21          {
+   22   1        S2CON = 0x50;   //8位数据,可变波特率，启动串行接收器
+   23   1        AUXR |= 0x04;   //定时器2时钟为Fosc,即1T
+   24   1        T2L = 0x8F;     //设定定时初值
+   25   1        T2H = 0xFD;     //设定定时初值
+   26   1      
+   27   1        AUXR |= 0x10;   //启动定时器2
+   28   1      
+   29   1        IE2 |= 0x01;    //串口2中断打开
+   30   1      
+   31   1        EA = 1;               //总中断打开
+   32   1      
+   33   1        delay_ms(100);
+   34   1      
+   35   1      }
+   36          
+   37          /***************************************************************************
+   38           * 描  述 : 串口2中断服务函数
+   39           * 入  参 : 无
+   40           * 返回值 : 无
+   41           **************************************************************************/
+   42          void Uart2() interrupt 8 using 1
+   43          {
+   44   1        IE2 &= 0xFE;                     // 串口2中断关闭
+   45   1        Flg=TRUE;                       //接收到数据,接收标识符有效
+   46   1        if (S2CON & S2RI)                //串行接收到停止位的中间时刻时，该位置1
+   47   1          {
+   48   2            S2CON &= ~S2RI;              //清除S2CON寄存器对应S2RI位（该位必须软件清零）
+   49   2            uart2temp = S2BUF;
+   50   2          }
+   51   1        if (S2CON & S2TI)                //在停止位开始发送时，该位置1
+   52   1          {
+   53   2            S2CON &= ~S2TI;              //清除S2CON寄存器对应S2TI位（该位必须软件清零）
+   54   2          }
+   55   1        IE2 |= 0x01;                    // 串口2中断打开
+   56   1      }
+   57          
+   58          /**************************************************************************************
+C251 COMPILER V5.60.0,  uart2                                                              04/03/24  11:37:30  PAGE 2   
+
+   59           * 描  述 : 串口二接收函数数据
+   60           * 入  参 : 无
+   61           * 返回值 : 无
+   62           **************************************************************************************/
+   63          void UART2_Rx_buff(void)
+   64          {
+   65   1        if(Flg)      //有新数据通过串口被接收到
+   66   1          {
+   67   2            IE2 &= 0xFE;                           // 串口2中断关闭
+   68   2            SendDataByUart1(uart2temp);            //发送字符
+   69   2      
+   70   2      
+   71   2      //      if(uart2temp==0x06)
+   72   2      //        {
+   73   2      //          PWM_Count+=5; //加速
+   74   2      //        }
+   75   2      //      else
+   76   2      //        {
+   77   2      //          if(uart2temp==0x07)
+   78   2      //            {
+   79   2      //              PWM_Count-=5; //减速
+   80   2      //            }
+   81   2      //          else
+   82   2      //            {
+   83   2      //              // 5 种小车状态，通过左右前后和速度进行计算得到
+   84   2      //                         //获取状态
+   85   2      //            }
+   86   2      //        }
+   87   2      
+   88   2      //      if(uart2temp<0x10)
+   89   2      //        {
+   90   2      //          Car_State_number=uart2temp;
+   91   2      //        }
+   92   2      //      else
+   93   2      //        {
+   94   2      //          PWM_Count = uart2temp-0x10;
+   95   2      //        }
+   96   2      
+   97   2      //      update_car(uart2temp);
+   98   2      
+   99   2      
+  100   2            IE2 |= 0x01;                           // 串口2中断打开
+  101   2            Flg=FALSE;                             //清除接收标识符
+  102   2          }
+  103   1      }
+  104          
+  105          void update_car(unsigned char temp)
+  106          {
+  107   1        // 更新小车状态
+  108   1        if(temp<0x10)
+  109   1          {
+  110   2            Car_State_number=temp;
+  111   2          }
+  112   1        else
+  113   1          {
+  114   2            PWM_Count = temp-0x10;
+  115   2          }
+  116   1      }
+  117          
+  118          void delay_with_BLE(unsigned char time)
+  119          {
+  120   1        i = 0;
+  121   1        while(++i <= time)
+  122   1          {
+  123   2            delay_ms(1);
+  124   2            UART2_Rx_buff();
+C251 COMPILER V5.60.0,  uart2                                                              04/03/24  11:37:30  PAGE 3   
+
+  125   2            update_car(uart2temp);
+  126   2          }
+  127   1      }
+  128          
+  129          
+  130          
+  131          
+  132          
+  133          
+  134          
+  135          
+  136          
+  137          
+  138          
+  139          
+  140          
+  141          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       161     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         3     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        10     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

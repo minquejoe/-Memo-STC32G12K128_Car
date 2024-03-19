@@ -1,0 +1,51 @@
+C251 COMPILER V5.60.0,  LED                                                                04/03/24  11:37:30  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN .\Objects\LED.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE HARDWARE\src\LED.c XSMALL BROWSE INCDIR(.\HARDWARE\inc) DEBUG PRINT(.\
+                    -Listings\LED.lst) TABS(2) OBJECT(.\Objects\LED.obj) 
+
+stmt  level    source
+
+    1          #include <STC32G.H>
+    2          #include "LED.h"
+    3          
+    4          sbit LED_L = P0^5;  // 重定义 P3.4 引脚
+    5          sbit LED_R = P3^4;  // 重定义 P0.5 引脚
+    6          
+    7          void LEDInit()
+    8          {
+    9   1        P0M0 |= 0x20; // 0010 0000 配置P0^5口为推挽输出模式
+   10   1        P0M1 |= 0x00;
+   11   1        
+   12   1        P3M0 |= 0x10; // 0001 0000 配置P3^4口为推挽输出模式
+   13   1        P3M1 |= 0x00;
+   14   1        
+   15   1        LED_L = 0;
+   16   1        LED_R = 0;
+   17   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        19     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

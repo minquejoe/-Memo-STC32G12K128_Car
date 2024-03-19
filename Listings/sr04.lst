@@ -1,0 +1,112 @@
+C251 COMPILER V5.60.0,  sr04                                                               04/03/24  11:37:30  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE sr04
+OBJECT MODULE PLACED IN .\Objects\sr04.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE HARDWARE\src\sr04.c XSMALL BROWSE INCDIR(.\HARDWARE\inc) DEBUG PRINT(.
+                    -\Listings\sr04.lst) TABS(2) OBJECT(.\Objects\sr04.obj) 
+
+stmt  level    source
+
+    1          #include <STC32G.H>
+    2          #include <delay.h>
+    3          #include <sr04.h>
+    4          
+    5          sbit Trig = P1^3;
+    6          sbit Echo = P4^0;
+    7          
+    8          void Start_SR04_Module();
+    9          void Timer3Init();
+   10          void calc_dist();
+   11          void Counter_Number_DATA();
+   12          
+   13          unsigned int S = 0; // 距离
+   14          
+   15          void Start_SR04_Module(void) {
+   16   1        Trig=1;                          //启动一次模块
+   17   1        _nop_(); 
+   18   1        _nop_(); 
+   19   1        _nop_(); 
+   20   1        _nop_(); 
+   21   1        _nop_(); 
+   22   1        _nop_(); 
+   23   1        _nop_(); 
+   24   1        _nop_(); 
+   25   1        _nop_(); 
+   26   1        _nop_(); 
+   27   1        _nop_(); 
+   28   1        _nop_(); 
+   29   1        _nop_(); 
+   30   1        _nop_(); 
+   31   1        _nop_(); 
+   32   1        _nop_(); 
+   33   1        _nop_();
+   34   1        _nop_(); 
+   35   1        _nop_(); 
+   36   1        _nop_(); 
+   37   1        _nop_();
+   38   1        Trig=0;
+   39   1       }
+   40          
+   41           void Counter_Number_DATA(void){
+   42   1         Start_SR04_Module(); // 启动模块
+   43   1         while(!Echo);  // 当RX为0时等待
+   44   1         T3R = 1; // 开启计数
+   45   1         while(Echo);
+   46   1         T3R = 0; // 关闭计数
+   47   1         calc_dist();
+   48   1       }
+   49           
+   50          void Timer3Init(void)
+   51          {
+   52   1        // 参考 STC32G 手册 14.4.2
+   53   1      //  // 定时器0/1模式寄存器
+   54   1      //  T1_M1 = 0;
+   55   1      //  T1_M0 = 1;  // 定时器1 16位不自动重载
+   56   1        
+   57   1        T3_CT = 0;  // T3用作定时器
+   58   1        T3CLKO = 0; // T3时钟输出关闭
+C251 COMPILER V5.60.0,  sr04                                                               04/03/24  11:37:30  PAGE 2   
+
+   59   1        
+   60   1        T3L = 0x00; //1T模式下初始装载值       
+   61   1        T3H = 0x00; //1T模式下初始装载值  
+   62   1        
+   63   1        // 参考 STC32G 手册 12.4.1
+   64   1      //  TF1 = 0;  //清除T1中断溢出标志位
+   65   1      //  ET1 = 1;  //使能定时器1的溢出中断允许位
+   66   1      //  TR1 = 1;  //定时器1开始计时 
+   67   1      }
+   68          
+   69          unsigned int time = 0; 
+   70          void calc_dist(void)
+   71          {
+   72   1         time = T3H*256 + T3L;
+   73   1         T3H=0;
+   74   1         T3L=0;
+   75   1         S = (time*1.87)/100/2;     //算出来是CM    
+   76   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       128     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         4     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        12     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
